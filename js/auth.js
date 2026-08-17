@@ -3,7 +3,6 @@ const REDIRECT_URI = "https://dollarsites.netlify.app/callback.html";
 
 async function startDerivLogin() {
     try {
-        // Generate PKCE verifier
         const array = crypto.getRandomValues(new Uint8Array(64));
 
         const codeVerifier = Array.from(array)
@@ -12,7 +11,6 @@ async function startDerivLogin() {
             )
             .join("");
 
-        // Generate code challenge
         const hash = await crypto.subtle.digest(
             "SHA-256",
             new TextEncoder().encode(codeVerifier)
@@ -25,7 +23,6 @@ async function startDerivLogin() {
             .replace(/\//g, "_")
             .replace(/=+$/, "");
 
-        // Generate state
         const stateArray = crypto.getRandomValues(
             new Uint8Array(16)
         );
@@ -34,20 +31,19 @@ async function startDerivLogin() {
             .map(b => b.toString(16).padStart(2, "0"))
             .join("");
 
-        // Store exactly as recommended by Deriv
-        sessionStorage.setItem(
+        // Store OAuth data locally
+        localStorage.setItem(
             "pkce_code_verifier",
             codeVerifier
         );
 
-        sessionStorage.setItem(
+        localStorage.setItem(
             "oauth_state",
             state
         );
 
-        console.log("OAuth state saved:", state);
+        console.log("DOLLARSITE OAuth state saved:", state);
 
-        // Build authorization request
         const params = new URLSearchParams({
             response_type: "code",
             client_id: DERIV_CLIENT_ID,
@@ -63,7 +59,7 @@ async function startDerivLogin() {
             params.toString();
 
     } catch (error) {
-        console.error("Deriv login error:", error);
+        console.error("Login error:", error);
         alert("Unable to start Deriv login.");
     }
 }
