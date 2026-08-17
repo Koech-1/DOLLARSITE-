@@ -7,51 +7,74 @@
 </head>
 
 <body>
+
     <h2>Authorizing DOLLARSITE...</h2>
     <p id="status">Checking authorization...</p>
 
     <script>
         const status = document.getElementById("status");
 
-        const params = new URLSearchParams(window.location.search);
+        const params =
+            new URLSearchParams(window.location.search);
 
         const code = params.get("code");
         const returnedState = params.get("state");
         const error = params.get("error");
 
-        console.log("Callback URL:", window.location.href);
-        console.log("Code:", code);
+        const savedState =
+            sessionStorage.getItem("oauth_state");
+
+        const codeVerifier =
+            sessionStorage.getItem("pkce_code_verifier");
+
         console.log("Returned state:", returnedState);
-
-        const savedState = sessionStorage.getItem("oauth_state");
-
         console.log("Saved state:", savedState);
+        console.log(
+            "PKCE verifier exists:",
+            !!codeVerifier
+        );
 
         if (error) {
-            status.textContent = "Deriv authorization failed: " + error;
-        }
-        else if (!code) {
-            status.textContent = "No authorization code received.";
-        }
-        else if (!savedState) {
+
+            status.textContent =
+                "Deriv authorization failed: " +
+                error;
+
+        } else if (!code) {
+
+            status.textContent =
+                "No authorization code received.";
+
+        } else if (!savedState) {
+
             status.textContent =
                 "No saved login session found. Please start login again.";
-        }
-        else if (returnedState !== savedState) {
-            status.textContent =
-                "Security verification failed. State does not match.";
-        }
-        else {
-            status.textContent =
-                "Authorization verified successfully.";
 
-            console.log("Authorization code:", code);
+        } else if (returnedState !== savedState) {
 
-            // Temporary test
-            setTimeout(() => {
-                window.location.href = "dashboard.html";
-            }, 1500);
+            status.textContent =
+                "Security verification failed.";
+
+        } else if (!codeVerifier) {
+
+            status.textContent =
+                "PKCE verifier is missing.";
+
+        } else {
+
+            status.textContent =
+                "Authorization verified successfully!";
+
+            console.log(
+                "Authorization code received."
+            );
+
+            /*
+             * We will exchange the authorization code
+             * through the backend in the next step.
+             */
         }
     </script>
+
 </body>
 </html>
