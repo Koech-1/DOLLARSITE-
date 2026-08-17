@@ -8,73 +8,63 @@
 
 <body>
 
-    <h2>Authorizing DOLLARSITE...</h2>
-    <p id="status">Checking authorization...</p>
+<h2>Authorizing DOLLARSITE...</h2>
+<p id="status">Checking authorization...</p>
 
-    <script>
-        const status = document.getElementById("status");
+<script>
+const status = document.getElementById("status");
 
-        const params =
-            new URLSearchParams(window.location.search);
+const params =
+    new URLSearchParams(window.location.search);
 
-        const code = params.get("code");
-        const returnedState = params.get("state");
-        const error = params.get("error");
+const code = params.get("code");
+const returnedState = params.get("state");
+const error = params.get("error");
 
-        const savedState =
-            sessionStorage.getItem("oauth_state");
+const savedState =
+    localStorage.getItem("oauth_state");
 
-        const codeVerifier =
-            sessionStorage.getItem("pkce_code_verifier");
+const codeVerifier =
+    localStorage.getItem("pkce_code_verifier");
 
-        console.log("Returned state:", returnedState);
-        console.log("Saved state:", savedState);
-        console.log(
-            "PKCE verifier exists:",
-            !!codeVerifier
-        );
+console.log("Returned state:", returnedState);
+console.log("Saved state:", savedState);
+console.log("Code:", code);
+console.log("PKCE exists:", !!codeVerifier);
 
-        if (error) {
+if (error) {
 
-            status.textContent =
-                "Deriv authorization failed: " +
-                error;
+    status.textContent =
+        "Deriv authorization failed: " + error;
 
-        } else if (!code) {
+} else if (!code) {
 
-            status.textContent =
-                "No authorization code received.";
+    status.textContent =
+        "No authorization code received.";
 
-        } else if (!savedState) {
+} else if (!savedState) {
 
-            status.textContent =
-                "No saved login session found. Please start login again.";
+    status.textContent =
+        "No saved OAuth session found. Please start login again.";
 
-        } else if (returnedState !== savedState) {
+} else if (returnedState !== savedState) {
 
-            status.textContent =
-                "Security verification failed.";
+    status.textContent =
+        "Security verification failed.";
 
-        } else if (!codeVerifier) {
+} else if (!codeVerifier) {
 
-            status.textContent =
-                "PKCE verifier is missing.";
+    status.textContent =
+        "PKCE verifier is missing.";
 
-        } else {
+} else {
 
-            status.textContent =
-                "Authorization verified successfully!";
+    status.textContent =
+        "Authorization verified successfully!";
 
-            console.log(
-                "Authorization code received."
-            );
-
-            /*
-             * We will exchange the authorization code
-             * through the backend in the next step.
-             */
-        }
-    </script>
+    console.log("Authorization code received.");
+}
+</script>
 
 </body>
 </html>
