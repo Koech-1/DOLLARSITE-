@@ -1,1 +1,85 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOLLARSITE - Authorizing</title>
+</head>
+<body>
+
+    <h2>Authorizing DOLLARSITE...</h2>
+    <p id="status">Please wait...</p>
+
+    <script>
+        const status = document.getElementById("status");
+
+        async function handleCallback() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+
+                const code = params.get("code");
+                const returnedState = params.get("state");
+                const error = params.get("error");
+
+                if (error) {
+                    status.textContent = "Authorization was cancelled or failed.";
+                    console.error("Deriv OAuth error:", error);
+                    return;
+                }
+
+                if (!code) {
+                    status.textContent = "No authorization code received.";
+                    return;
+                }
+
+                // Verify OAuth state
+                const savedState = sessionStorage.getItem("oauth_state");
+
+                if (!savedState || returnedState !== savedState) {
+                    status.textContent = "Security verification failed.";
+                    return;
+                }
+
+                // Get PKCE verifier
+                const codeVerifier =
+                    sessionStorage.getItem("pkce_code_verifier");
+
+                if (!codeVerifier) {
+                    status.textContent =
+                        "Login session expired. Please return to login.";
+                    return;
+                }
+
+                /*
+                 * The authorization code must be exchanged
+                 * for tokens by your backend.
+                 *
+                 * Do NOT put your Deriv client secret in this file.
+                 */
+
+                status.textContent =
+                    "Authorization successful. Completing login...";
+
+                // For now, display the received code for debugging.
+                console.log("Authorization code received:", code);
+
+                /*
+                 * NEXT STEP:
+                 * Send this code + codeVerifier to your backend,
+                 * exchange them for the Deriv token, then redirect
+                 * the user to dashboard.html.
+                 */
+
+            } catch (error) {
+                console.error(error);
+                status.textContent =
+                    "Something went wrong during authorization.";
+            }
+        }
+
+        handleCallback();
+    </script>
+
+</body>
+  </htm2.YOUR l>
