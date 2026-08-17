@@ -34,22 +34,20 @@ async function startDerivLogin() {
             .map(b => b.toString(16).padStart(2, "0"))
             .join("");
 
-        /*
-         * Store OAuth values in cookies.
-         * They are needed after Deriv redirects
-         * the browser back to callback.html.
-         */
-        document.cookie =
-            "pkce_code_verifier=" +
-            encodeURIComponent(codeVerifier) +
-            "; Path=/; Secure; SameSite=Lax; Max-Age=600";
+        // Store exactly as recommended by Deriv
+        sessionStorage.setItem(
+            "pkce_code_verifier",
+            codeVerifier
+        );
 
-        document.cookie =
-            "oauth_state=" +
-            encodeURIComponent(state) +
-            "; Path=/; Secure; SameSite=Lax; Max-Age=600";
+        sessionStorage.setItem(
+            "oauth_state",
+            state
+        );
 
-        // Build Deriv OAuth authorization URL
+        console.log("OAuth state saved:", state);
+
+        // Build authorization request
         const params = new URLSearchParams({
             response_type: "code",
             client_id: DERIV_CLIENT_ID,
@@ -60,22 +58,17 @@ async function startDerivLogin() {
             code_challenge_method: "S256"
         });
 
-        console.log("Starting Deriv authorization...");
-
         window.location.href =
             "https://auth.deriv.com/oauth2/auth?" +
             params.toString();
 
     } catch (error) {
         console.error("Deriv login error:", error);
-        alert("Unable to start Deriv login. Please try again.");
+        alert("Unable to start Deriv login.");
     }
 }
 
-
-// Login button
 document.addEventListener("DOMContentLoaded", () => {
-
     const loginButton =
         document.getElementById("derivLoginBtn");
 
@@ -85,5 +78,4 @@ document.addEventListener("DOMContentLoaded", () => {
             startDerivLogin
         );
     }
-
 });
