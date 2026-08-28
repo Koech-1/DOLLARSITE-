@@ -2,49 +2,96 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>DOLLARSITE | Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="css/login.css">
+<title>DOLLARSITE | Register</title>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
+<link rel="stylesheet" href="css/register.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
 
-    <div class="login-container">
+<div class="register-container">
 
-        <div class="login-box">
+    <div class="register-box">
 
-            <h1>DOLLARSITE</h1>
+        <h1>DOLLARSITE</h1>
 
-            <p>Welcome Back</p>
+        <p>Create Your Trading Account</p>
 
-            <button type="button" id="derivLoginBtn">
-                Login
+        <div id="authMessage" class="auth-message"></div>
+
+        <form id="registerForm">
+
+            <input
+                type="text"
+                id="fullName"
+                placeholder="Full Name"
+                autocomplete="name"
+                required
+            >
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email Address"
+                autocomplete="email"
+                required
+            >
+
+            <input
+                type="tel"
+                id="phone"
+                placeholder="Phone Number"
+                autocomplete="tel"
+                required
+            >
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Create Password"
+                autocomplete="new-password"
+                minlength="6"
+                required
+            >
+
+            <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirm Password"
+                autocomplete="new-password"
+                minlength="6"
+                required
+            >
+
+            <button type="submit" id="registerBtn">
+                Create Account
             </button>
 
-            <div class="links">
+        </form>
 
-                <p>
-                    Don't have an account?
-                    <a href="register.html">Register</a>
-                </p>
+        <div class="links">
 
-            </div>
+            <p>
+                Already have an account?
+                <a href="login.html">Login</a>
+            </p>
 
         </div>
 
     </div>
 
-    <!-- Deriv authentication -->
-    <script src="js/auth.js"></script>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/auth.js"></script>
 
 </body>
-
-</html>
+    </html>
