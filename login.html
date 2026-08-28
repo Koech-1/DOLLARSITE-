@@ -27,19 +27,21 @@
 
             <p>Welcome Back</p>
 
-            <!-- Deriv Login -->
+            <div id="authMessage" class="auth-message"></div>
+
             <button
                 type="button"
-                id="derivLoginBtn"
-                onclick="window.location.href='https://t.deriv.link?t=K35TSSFGAPQD'">
-                Login
+                id="derivLoginBtn">
+                Login with Deriv
             </button>
 
             <div class="links">
 
                 <p>
                     Don't have an account?
-                    <a href="register.html">Create Account</a>
+                    <a href="register.html">
+                        Create Account
+                    </a>
                 </p>
 
             </div>
@@ -47,6 +49,13 @@
         </div>
 
     </div>
+
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- DOLLARSITE authentication -->
+    <script src="js/auth.js"></script>
 
 </body>
 
