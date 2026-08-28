@@ -3,77 +3,51 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DOLLARSITE | Login</title>
+    <title>DOLLARSITE | Login</title>
 
-<link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/login.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
 </head>
 
 <body>
 
-<div class="login-container">
+    <div class="login-container">
 
-    <div class="login-box">
+        <div class="login-box">
 
-        <h1>DOLLARSITE</h1>
+            <h1>DOLLARSITE</h1>
 
-        <p>Welcome Back</p>
+            <p>Welcome Back</p>
 
-        <div id="authMessage" class="auth-message"></div>
-
-        <form id="loginForm">
-
-            <input
-                type="email"
-                id="loginEmail"
-                placeholder="Email Address"
-                autocomplete="email"
-                required
-            >
-
-            <input
-                type="password"
-                id="loginPassword"
-                placeholder="Password"
-                autocomplete="current-password"
-                required
-            >
-
-            <button type="submit" id="loginBtn">
+            <!-- Deriv Login -->
+            <button
+                type="button"
+                id="derivLoginBtn"
+                onclick="window.location.href='https://t.deriv.link?t=K35TSSFGAPQD'">
                 Login
             </button>
 
-        </form>
+            <div class="links">
 
-        <div class="divider">
-            <span>OR</span>
-        </div>
+                <p>
+                    Don't have an account?
+                    <a href="register.html">Create Account</a>
+                </p>
 
-        <button type="button" id="derivLoginBtn" class="deriv-btn">
-            Login with Deriv
-        </button>
-
-        <div class="links">
-
-            <p>
-                Don't have an account?
-                <a href="register.html">Register</a>
-            </p>
+            </div>
 
         </div>
 
     </div>
 
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js"></script>
-
 </body>
-    </html>
+
+</html>
