@@ -35,7 +35,7 @@ const DOLLARSITE_URL =
 // ==========================================
 
 const DERIV_CLIENT_ID =
-    "348JWWfx0KHC8bTc1XuPf";
+    ""34g6Lzv4vWOGql5b20gly ";
 
 const REDIRECT_URI =
     "https://dollarsites.netlify.app/callback.html";
