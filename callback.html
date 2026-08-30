@@ -1,70 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>DOLLARSITE - Authorization</title>
 </head>
 
 <body>
 
-<h2>Authorizing DOLLARSITE...</h2>
-<p id="status">Checking authorization...</p>
+    <h2>Authorizing DOLLARSITE...</h2>
 
-<script>
-const status = document.getElementById("status");
+    <p id="status">
+        Checking authorization...
+    </p>
 
-const params =
-    new URLSearchParams(window.location.search);
 
-const code = params.get("code");
-const returnedState = params.get("state");
-const error = params.get("error");
+    <script>
 
-const savedState =
-    localStorage.getItem("oauth_state");
+        const status =
+            document.getElementById("status");
 
-const codeVerifier =
-    localStorage.getItem("pkce_code_verifier");
 
-console.log("Returned state:", returnedState);
-console.log("Saved state:", savedState);
-console.log("Code:", code);
-console.log("PKCE exists:", !!codeVerifier);
+        // ==========================================
+        // GET DERIV CALLBACK PARAMETERS
+        // ==========================================
 
-if (error) {
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
 
-    status.textContent =
-        "Deriv authorization failed: " + error;
 
-} else if (!code) {
+        const code =
+            params.get("code");
 
-    status.textContent =
-        "No authorization code received.";
+        const returnedState =
+            params.get("state");
 
-} else if (!savedState) {
+        const error =
+            params.get("error");
 
-    status.textContent =
-        "No saved OAuth session found. Please start login again.";
 
-} else if (returnedState !== savedState) {
+        // ==========================================
+        // GET SAVED PKCE INFORMATION
+        // ==========================================
 
-    status.textContent =
-        "Security verification failed.";
+        const savedState =
+            sessionStorage.getItem(
+                "oauth_state"
+            );
 
-} else if (!codeVerifier) {
+        const codeVerifier =
+            sessionStorage.getItem(
+                "pkce_code_verifier"
+            );
 
-    status.textContent =
-        "PKCE verifier is missing.";
 
-} else {
+        // ==========================================
+        // DEBUG
+        // ==========================================
 
-    status.textContent =
-        "Authorization verified successfully!";
+        console.log(
+            "Returned state:",
+            returnedState
+        );
 
-    console.log("Authorization code received.");
-}
-</script>
+        console.log(
+            "Saved state:",
+            savedState
+        );
+
+        console.log(
+            "Code received:",
+            !!code
+        );
+
+        console.log(
+            "PKCE verifier exists:",
+            !!codeVerifier
+        );
+
+
+        // ==========================================
+        // ERROR CHECK
+        // ==========================================
+
+        if (error) {
+
+            status.textContent =
+                "Deriv authorization failed: " +
+                error;
+
+        }
+
+
+        // ==========================================
+        // CODE CHECK
+        // ==========================================
+
+        else if (!code) {
+
+            status.textContent =
+                "No authorization code received.";
+
+        }
+
+
+        // ==========================================
+        // STATE CHECK
+        // ==========================================
+
+        else if (!savedState) {
+
+            status.textContent =
+                "No saved OAuth session found. Please start login again.";
+
+        }
+
+
+        else if (
+            returnedState !== savedState
+        ) {
+
+            status.textContent =
+                "Security verification failed.";
+
+        }
+
+
+        // ==========================================
+        // PKCE CHECK
+        // ==========================================
+
+        else if (!codeVerifier) {
+
+            status.textContent =
+                "PKCE verifier is missing.";
+
+        }
+
+
+        // ==========================================
+        // AUTHORIZATION VERIFIED
+        // ==========================================
+
+        else {
+
+            status.textContent =
+                "Authorization verified successfully!";
+
+            console.log(
+                "Authorization code received."
+            );
+
+            console.log(
+                "Ready for secure token exchange."
+            );
+
+        }
+
+    </script>
 
 </body>
+
 </html>
