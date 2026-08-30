@@ -2,303 +2,274 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DOLLARSITE - Authorization</title>
-
 </head>
-
 
 <body>
 
-    <h2>
-        Authorizing DOLLARSITE...
-    </h2>
+<h2>Authorizing DOLLARSITE...</h2>
 
-    <p id="status">
-        Checking authorization...
-    </p>
+<p id="status">Checking authorization...</p>
 
+<script>
 
-    <script>
-
-        const status =
-            document.getElementById("status");
+const status =
+    document.getElementById("status");
 
 
-        // ==========================================
-        // GET DERIV CALLBACK PARAMETERS
-        // ==========================================
+// ==========================================
+// GET DERIV PARAMETERS
+// ==========================================
 
-        const params =
-            new URLSearchParams(
-                window.location.search
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const code =
+    params.get("code");
+
+const returnedState =
+    params.get("state");
+
+const error =
+    params.get("error");
+
+
+// ==========================================
+// GET PKCE DATA
+// ==========================================
+
+const savedState =
+    sessionStorage.getItem(
+        "oauth_state"
+    );
+
+const codeVerifier =
+    sessionStorage.getItem(
+        "pkce_code_verifier"
+    );
+
+
+// ==========================================
+// SUPABASE EDGE FUNCTION
+// ==========================================
+
+const EDGE_FUNCTION_URL =
+    "https://pzrqrdqhnjpjzpwxjysf.supabase.co/functions/v1/deriv-oauth";
+
+
+// ==========================================
+// DEBUG
+// ==========================================
+
+console.log(
+    "=== DOLLARSITE OAUTH ==="
+);
+
+console.log(
+    "Returned state:",
+    returnedState
+);
+
+console.log(
+    "Saved state:",
+    savedState
+);
+
+console.log(
+    "Code exists:",
+    !!code
+);
+
+console.log(
+    "PKCE exists:",
+    !!codeVerifier
+);
+
+
+// ==========================================
+// ERROR CHECK
+// ==========================================
+
+if (error) {
+
+    status.textContent =
+        "Deriv authorization failed: " +
+        error;
+
+}
+
+
+// ==========================================
+// CODE CHECK
+// ==========================================
+
+else if (!code) {
+
+    status.textContent =
+        "No authorization code received.";
+
+}
+
+
+// ==========================================
+// STATE CHECK
+// ==========================================
+
+else if (!savedState) {
+
+    status.textContent =
+        "No saved OAuth session found. Please start login again.";
+
+}
+
+
+// ==========================================
+// STATE SECURITY CHECK
+// ==========================================
+
+else if (
+    returnedState !== savedState
+) {
+
+    status.textContent =
+        "Security verification failed.";
+
+}
+
+
+// ==========================================
+// PKCE CHECK
+// ==========================================
+
+else if (!codeVerifier) {
+
+    status.textContent =
+        "PKCE verifier is missing.";
+
+}
+
+
+// ==========================================
+// TOKEN EXCHANGE
+// ==========================================
+
+else {
+
+    status.textContent =
+        "Authorization verified. Connecting to DOLLARSITE...";
+
+
+    fetch(
+        EDGE_FUNCTION_URL,
+        {
+
+            method: "POST",
+
+            headers: {
+
+                "Content-Type":
+                    "application/json"
+
+            },
+
+            body: JSON.stringify({
+
+                code:
+                    code,
+
+                code_verifier:
+                    codeVerifier
+
+            })
+
+        }
+    )
+
+    .then(
+        async response => {
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    "Token exchange failed."
+                );
+
+            }
+
+            return data;
+
+        }
+    )
+
+    .then(
+        data => {
+
+            console.log(
+                "Deriv authorization successful."
             );
 
 
-        const code =
-            params.get("code");
-
-        const returnedState =
-            params.get("state");
-
-        const error =
-            params.get("error");
-
-
-        // ==========================================
-        // GET SAVED OAUTH DATA
-        // ==========================================
-
-        const savedState =
-            localStorage.getItem(
-                "oauth_state"
+            // Save Deriv access token
+            localStorage.setItem(
+                "deriv_access_token",
+                data.access_token
             );
 
-        const codeVerifier =
-            localStorage.getItem(
+
+            // Clear PKCE data
+            sessionStorage.removeItem(
                 "pkce_code_verifier"
             );
 
+            sessionStorage.removeItem(
+                "oauth_state"
+            );
 
-        // ==========================================
-        // SUPABASE EDGE FUNCTION
-        // ==========================================
-
-        const EDGE_FUNCTION_URL =
-            "https://pzrqrdqhnjpjzpwxjysf.supabase.co/functions/v1/deriv-oauth";
-
-
-        // ==========================================
-        // DEBUG
-        // ==========================================
-
-        console.log(
-            "=== DOLLARSITE OAUTH ==="
-        );
-
-        console.log(
-            "Returned state:",
-            returnedState
-        );
-
-        console.log(
-            "Saved state:",
-            savedState
-        );
-
-        console.log(
-            "Authorization code:",
-            !!code
-        );
-
-        console.log(
-            "PKCE verifier:",
-            !!codeVerifier
-        );
-
-
-        // ==========================================
-        // ERROR
-        // ==========================================
-
-        if (error) {
 
             status.textContent =
-                "Deriv authorization failed: " +
-                error;
+                "Login successful! Redirecting...";
 
-        }
 
+            setTimeout(
+                () => {
 
-        // ==========================================
-        // NO CODE
-        // ==========================================
+                    window.location.href =
+                        "dashboard.html";
 
-        else if (!code) {
-
-            status.textContent =
-                "No authorization code received.";
-
-        }
-
-
-        // ==========================================
-        // NO STATE
-        // ==========================================
-
-        else if (!savedState) {
-
-            status.textContent =
-                "No saved OAuth session found. Please start login again.";
-
-        }
-
-
-        // ==========================================
-        // STATE SECURITY CHECK
-        // ==========================================
-
-        else if (
-            returnedState !== savedState
-        ) {
-
-            status.textContent =
-                "Security verification failed.";
-
-        }
-
-
-        // ==========================================
-        // PKCE CHECK
-        // ==========================================
-
-        else if (!codeVerifier) {
-
-            status.textContent =
-                "PKCE verifier is missing.";
-
-        }
-
-
-        // ==========================================
-        // TOKEN EXCHANGE
-        // ==========================================
-
-        else {
-
-            status.textContent =
-                "Authorization verified. Connecting to DOLLARSITE...";
-
-
-            fetch(
-                EDGE_FUNCTION_URL,
-                {
-
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body: JSON.stringify({
-
-                        code:
-                            code,
-
-                        code_verifier:
-                            codeVerifier
-
-                    })
-
-                }
-            )
-
-
-            .then(
-                async response => {
-
-                    const data =
-                        await response.json();
-
-
-                    if (!response.ok) {
-
-                        throw new Error(
-                            data.error ||
-                            "Token exchange failed."
-                        );
-
-                    }
-
-
-                    return data;
-
-                }
-            )
-
-
-            .then(
-                data => {
-
-                    console.log(
-                        "Deriv authorization successful."
-                    );
-
-
-                    // ==================================
-                    // SAVE ACCESS TOKEN
-                    // ==================================
-
-                    localStorage.setItem(
-                        "deriv_access_token",
-                        data.access_token
-                    );
-
-
-                    // ==================================
-                    // REMOVE TEMPORARY OAUTH DATA
-                    // ==================================
-
-                    localStorage.removeItem(
-                        "pkce_code_verifier"
-                    );
-
-                    localStorage.removeItem(
-                        "oauth_state"
-                    );
-
-
-                    // ==================================
-                    // SUCCESS
-                    // ==================================
-
-                    status.textContent =
-                        "Login successful! Redirecting...";
-
-
-                    setTimeout(
-                        () => {
-
-                            window.location.href =
-                                "dashboard.html";
-
-                        },
-                        1000
-                    );
-
-                }
-            )
-
-
-            .catch(
-                error => {
-
-                    console.error(
-                        "OAuth error:",
-                        error
-                    );
-
-
-                    status.textContent =
-                        error.message ||
-                        "Unable to complete authorization.";
-
-                }
+                },
+                1000
             );
 
         }
+    )
 
-    </script>
+    .catch(
+        error => {
+
+            console.error(
+                "OAuth error:",
+                error
+            );
+
+            status.textContent =
+                error.message ||
+                "Unable to complete authorization.";
+
+        }
+    );
+
+}
+
+</script>
 
 </body>
 
