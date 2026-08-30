@@ -3,17 +3,11 @@
 // SUPABASE + DERIV
 // ==========================================
 
-
-// ==========================================
-// SUPABASE CONFIG
-// ==========================================
-
 const SUPABASE_URL =
     "https://pzrqrdqhnjpjzpwxjysf.supabase.co";
 
 const SUPABASE_KEY =
     "sb_publishable_NHhv5GJI9b6rZWDeFxbmrw_RFatrFGj";
-
 
 const supabaseClient =
     window.supabase.createClient(
@@ -21,18 +15,8 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
-
-// ==========================================
-// DOLLARSITE URL
-// ==========================================
-
 const DOLLARSITE_URL =
     "https://dollarsites.netlify.app";
-
-
-// ==========================================
-// DERIV CONFIG
-// ==========================================
 
 const DERIV_CLIENT_ID =
     "34g6Lzv4vWOGql5b20gly";
@@ -42,7 +26,7 @@ const REDIRECT_URI =
 
 
 // ==========================================
-// MESSAGE FUNCTION
+// MESSAGE
 // ==========================================
 
 function showMessage(message, type = "error") {
@@ -66,7 +50,6 @@ function showMessage(message, type = "error") {
 const registerForm =
     document.getElementById("registerForm");
 
-
 if (registerForm) {
 
     registerForm.addEventListener(
@@ -77,18 +60,15 @@ if (registerForm) {
 
             const fullName =
                 document.getElementById("fullName")
-                    .value
-                    .trim();
+                    .value.trim();
 
             const email =
                 document.getElementById("email")
-                    .value
-                    .trim();
+                    .value.trim();
 
             const phone =
                 document.getElementById("phone")
-                    .value
-                    .trim();
+                    .value.trim();
 
             const password =
                 document.getElementById("password")
@@ -97,7 +77,6 @@ if (registerForm) {
             const confirmPassword =
                 document.getElementById("confirmPassword")
                     .value;
-
 
             if (password !== confirmPassword) {
 
@@ -108,7 +87,6 @@ if (registerForm) {
                 return;
             }
 
-
             if (password.length < 6) {
 
                 showMessage(
@@ -118,16 +96,12 @@ if (registerForm) {
                 return;
             }
 
-
             const button =
                 document.getElementById("registerBtn");
 
-
             button.disabled = true;
-
             button.innerText =
                 "Creating Account...";
-
 
             try {
 
@@ -137,9 +111,8 @@ if (registerForm) {
                 } =
                 await supabaseClient.auth.signUp({
 
-                    email: email,
-
-                    password: password,
+                    email,
+                    password,
 
                     options: {
 
@@ -154,18 +127,13 @@ if (registerForm) {
 
                             phone:
                                 phone
-
                         }
-
                     }
-
                 });
-
 
                 if (error) {
                     throw error;
                 }
-
 
                 if (!data.session) {
 
@@ -182,11 +150,9 @@ if (registerForm) {
                     return;
                 }
 
-
                 await createLocalUser(
                     data.user
                 );
-
 
                 window.location.href =
                     "dashboard.html";
@@ -205,13 +171,11 @@ if (registerForm) {
                     "Registration failed."
                 );
 
-
                 button.disabled = false;
 
                 button.innerText =
                     "Create Account";
             }
-
         }
     );
 }
@@ -224,7 +188,6 @@ if (registerForm) {
 const loginForm =
     document.getElementById("loginForm");
 
-
 if (loginForm) {
 
     loginForm.addEventListener(
@@ -233,26 +196,21 @@ if (loginForm) {
 
             event.preventDefault();
 
-
             const email =
                 document.getElementById("loginEmail")
-                    .value
-                    .trim();
+                    .value.trim();
 
             const password =
                 document.getElementById("loginPassword")
                     .value;
 
-
             const button =
                 document.getElementById("loginBtn");
-
 
             button.disabled = true;
 
             button.innerText =
                 "Logging in...";
-
 
             try {
 
@@ -263,33 +221,24 @@ if (loginForm) {
                 await supabaseClient.auth
                     .signInWithPassword({
 
-                        email:
-                            email,
-
-                        password:
-                            password
-
+                        email,
+                        password
                     });
-
 
                 if (error) {
                     throw error;
                 }
-
 
                 if (!data.user) {
 
                     throw new Error(
                         "Login failed. User session was not created."
                     );
-
                 }
-
 
                 await createLocalUser(
                     data.user
                 );
-
 
                 window.location.href =
                     "dashboard.html";
@@ -308,26 +257,23 @@ if (loginForm) {
                     "Login failed."
                 );
 
-
                 button.disabled = false;
 
                 button.innerText =
                     "Login";
             }
-
         }
     );
 }
 
 
 // ==========================================
-// CREATE LOCAL DASHBOARD USER
+// CREATE LOCAL USER
 // ==========================================
 
 async function createLocalUser(authUser) {
 
     let profile = null;
-
 
     try {
 
@@ -341,11 +287,8 @@ async function createLocalUser(authUser) {
             .eq("id", authUser.id)
             .single();
 
-
         if (!error) {
-
             profile = data;
-
         }
 
     }
@@ -356,9 +299,7 @@ async function createLocalUser(authUser) {
             "Profile could not be loaded:",
             error
         );
-
     }
-
 
     const localUser = {
 
@@ -383,9 +324,7 @@ async function createLocalUser(authUser) {
             Number(
                 profile?.balance || 0
             )
-
     };
-
 
     localStorage.setItem(
         "loggedInUser",
@@ -402,26 +341,14 @@ async function startDerivLogin() {
 
     try {
 
-        // Clear any previous OAuth data
-        sessionStorage.removeItem(
-            "pkce_code_verifier"
-        );
-
-        sessionStorage.removeItem(
-            "oauth_state"
-        );
-
-
-        // Generate PKCE verifier
+        // Generate verifier
         const array =
             crypto.getRandomValues(
                 new Uint8Array(64)
             );
 
-
         const characters =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-
 
         const codeVerifier =
             Array.from(array)
@@ -435,7 +362,7 @@ async function startDerivLogin() {
                 .join("");
 
 
-        // Generate SHA-256 challenge
+        // Generate challenge
         const hash =
             await crypto.subtle.digest(
                 "SHA-256",
@@ -444,16 +371,15 @@ async function startDerivLogin() {
                 )
             );
 
-
         const codeChallenge =
             btoa(
                 String.fromCharCode(
                     ...new Uint8Array(hash)
                 )
             )
-                .replace(/\+/g, "-")
-                .replace(/\//g, "_")
-                .replace(/=+$/, "");
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
 
 
         // Generate state
@@ -461,7 +387,6 @@ async function startDerivLogin() {
             crypto.getRandomValues(
                 new Uint8Array(16)
             );
-
 
         const state =
             Array.from(stateArray)
@@ -474,59 +399,36 @@ async function startDerivLogin() {
 
 
         // ======================================
-        // SAVE PKCE DATA
+        // SAVE USING LOCALSTORAGE
         // ======================================
 
-        sessionStorage.setItem(
+        localStorage.setItem(
             "pkce_code_verifier",
             codeVerifier
         );
 
-        sessionStorage.setItem(
+        localStorage.setItem(
             "oauth_state",
             state
         );
 
 
-        // ======================================
-        // VERIFY STORAGE BEFORE REDIRECT
-        // ======================================
-
         console.log(
             "OAuth state saved:",
-            sessionStorage.getItem(
+            localStorage.getItem(
                 "oauth_state"
             )
         );
 
         console.log(
             "PKCE verifier saved:",
-            !!sessionStorage.getItem(
+            !!localStorage.getItem(
                 "pkce_code_verifier"
             )
         );
 
 
-        if (
-            !sessionStorage.getItem(
-                "oauth_state"
-            ) ||
-            !sessionStorage.getItem(
-                "pkce_code_verifier"
-            )
-        ) {
-
-            throw new Error(
-                "Unable to save OAuth session."
-            );
-
-        }
-
-
-        // ======================================
-        // BUILD DERIV AUTHORIZATION URL
-        // ======================================
-
+        // Build authorization URL
         const params =
             new URLSearchParams({
 
@@ -550,26 +452,12 @@ async function startDerivLogin() {
 
                 code_challenge_method:
                     "S256"
-
             });
 
 
-        const authorizationUrl =
-            "https://auth.deriv.com/oauth2/auth?" +
-            params.toString();
-
-
-        console.log(
-            "Redirecting to Deriv OAuth..."
-        );
-
-
-        // ======================================
-        // REDIRECT
-        // ======================================
-
         window.location.assign(
-            authorizationUrl
+            "https://auth.deriv.com/oauth2/auth?" +
+            params.toString()
         );
 
     }
@@ -582,10 +470,8 @@ async function startDerivLogin() {
         );
 
         showMessage(
-            error.message ||
             "Unable to start Deriv login."
         );
-
     }
 }
 
@@ -599,14 +485,12 @@ const derivLoginButton =
         "derivLoginBtn"
     );
 
-
 if (derivLoginButton) {
 
     derivLoginButton.addEventListener(
         "click",
         startDerivLogin
     );
-
 }
 
 
@@ -628,9 +512,7 @@ async function logout() {
             "Logout error:",
             error
         );
-
     }
-
 
     localStorage.removeItem(
         "loggedInUser"
@@ -640,15 +522,13 @@ async function logout() {
         "deriv_access_token"
     );
 
-
-    sessionStorage.removeItem(
+    localStorage.removeItem(
         "pkce_code_verifier"
     );
 
-    sessionStorage.removeItem(
+    localStorage.removeItem(
         "oauth_state"
     );
-
 
     window.location.href =
         "login.html";
