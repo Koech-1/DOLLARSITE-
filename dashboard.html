@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DOLLARSITE | Trading Dashboard</title>
+
+    <link rel="stylesheet" href="css/dashboard.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- MOBILE OVERLAY -->
+<div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">D</div>
+        <span>DOLLARSITE</span>
+    </div>
+
+    <nav>
+
+        <button class="nav-item active" onclick="showSection('dashboard', this)">
+            <span>▣</span>
+            Dashboard
+        </button>
+
+        <button class="nav-item" onclick="showSection('analysis', this)">
+            <span>📊</span>
+            Analysis Tool
+        </button>
+
+        <button class="nav-item" onclick="showSection('bots', this)">
+            <span>🤖</span>
+            Bot Trading
+        </button>
+
+        <button class="nav-item" onclick="showSection('copy', this)">
+            <span>👥</span>
+            Copy Trading
+        </button>
+
+        <button class="nav-item" onclick="showSection('history', this)">
+            <span>📜</span>
+            Trading History
+        </button>
+
+        <button class="nav-item" onclick="showSection('settings', this)">
+            <span>⚙</span>
+            Settings
+        </button>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+        <button class="logout-side" onclick="logout()">
+            ⇥ Logout
+        </button>
+    </div>
+
+</aside>
+
+
+<!-- MAIN AREA -->
+<main class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+
+        <div class="top-title">
+            <span>Trading Dashboard</span>
+            <small id="marketStatus">
+                ● Market Active
+            </small>
+        </div>
+
+        <div class="user-area">
+
+            <div class="notification">
+                🔔
+            </div>
+
+            <div class="user-info">
+                <div class="avatar" id="avatar">U</div>
+
+                <div>
+                    <strong id="username">User</strong>
+                    <small>Trader</small>
+                </div>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENT -->
+    <div class="content">
+
+
+        <!-- ================= DASHBOARD ================= -->
+        <section id="dashboard" class="section active">
+
+            <div class="welcome">
+                <div>
+                    <p>Welcome back 👋</p>
+                    <h1 id="welcomeName">Trader</h1>
+                    <span>Monitor your account and trading activity.</span>
+                </div>
+
+                <button class="primary-btn" onclick="showSection('analysis')">
+                    Open Analysis
+                </button>
+            </div>
+
+
+            <!-- STAT CARDS -->
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">💰</div>
+
+                    <div>
+                        <span>Account Balance</span>
+                        <h2 id="balance">$0.00</h2>
+                    </div>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-icon green">📈</div>
+
+                    <div>
+                        <span>Profit Today</span>
+                        <h2 id="profit">$0.00</h2>
+                    </div>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">🎯</div>
+
+                    <div>
+                        <span>Win Rate</span>
+                        <h2 id="winrate">0%</h2>
+                    </div>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">⚡</div>
+
+                    <div>
+                        <span>Active Trades</span>
+                        <h2 id="activeTrades">0</h2>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- QUICK ACTIONS -->
+            <div class="section-heading">
+                <div>
+                    <h2>Quick Actions</h2>
+                    <p>Access your trading tools.</p>
+                </div>
+            </div>
+
+
+            <div class="quick-grid">
+
+                <button class="tool-card" onclick="showSection('analysis')">
+
+                    <div class="tool-icon">📊</div>
+
+                    <div>
+                        <h3>Analysis Tool</h3>
+                        <p>Analyze market movements.</p>
+                    </div>
+
+                    <span>→</span>
+
+                </button>
+
+
+                <button class="tool-card" onclick="showSection('bots')">
+
+                    <div class="tool-icon">🤖</div>
+
+                    <div>
+                        <h3>Bot Trading</h3>
+                        <p>Manage your trading bots.</p>
+                    </div>
+
+                    <span>→</span>
+
+                </button>
+
+
+                <button class="tool-card" onclick="showSection('copy')">
+
+                    <div class="tool-icon">👥</div>
+
+                    <div>
+                        <h3>Copy Trading</h3>
+                        <p>Manage copied strategies.</p>
+                    </div>
+
+                    <span>→</span>
+
+                </button>
+
+            </div>
+
+
+            <!-- ACCOUNT ACTIONS -->
+            <div class="dashboard-columns">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Account</h3>
+                            <p>Manage your account balance.</p>
+                        </div>
+                    </div>
+
+                    <div class="account-actions">
+
+                        <button class="deposit-btn" onclick="deposit()">
+                            + Deposit
+                        </button>
+
+                        <button class="withdraw-btn" onclick="withdraw()">
+                            Withdraw
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Recent Activity</h3>
+                            <p>Your latest trading activity.</p>
+                        </div>
+
+                        <button class="text-btn" onclick="showSection('history')">
+                            View all
+                        </button>
+                    </div>
+
+                    <div id="recentActivity" class="activity-list">
+
+                        <div class="empty-state">
+                            No trading activity yet.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= ANALYSIS ================= -->
+        <section id="analysis" class="section">
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Analysis Tool</h1>
+                    <p>Analyze market data before making a trading decision.</p>
+                </div>
+
+                <div class="market-selector">
+
+                    <label>Market</label>
+
+                    <select id="analysisMarket">
+                        <option>Volatility 10 Index</option>
+                        <option>Volatility 25 Index</option>
+                        <option>Volatility 50 Index</option>
+                        <option>Volatility 75 Index</option>
+                        <option>Volatility 100 Index</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="analysis-tabs">
+
+                <button class="analysis-tab active" onclick="analysisTab('digits', this)">
+                    🔢 Digits
+                </button>
+
+                <button class="analysis-tab" onclick="analysisTab('risefall', this)">
+                    📈 Rise / Fall
+                </button>
+
+                <button class="analysis-tab" onclick="analysisTab('chart', this)">
+                    📊 Chart
+                </button>
+
+            </div>
+
+
+            <!-- DIGITS -->
+            <div id="digits" class="analysis-panel active">
+
+                <div class="analysis-grid">
+
+                    <div class="panel digit-main">
+
+                        <div class="panel-header">
+                            <div>
+                                <h3>Digits Analysis</h3>
+                                <p>Recent digit distribution.</p>
+                            </div>
+
+                            <button class="secondary-btn" onclick="generateAnalysis()">
+                                Refresh
+                            </button>
+                        </div>
+
+
+                        <div class="digit-display" id="digitDisplay">
+
+                            <div class="digit-circle">0</div>
+                            <div class="digit-circle">0</div>
+                            <div class="digit-circle">0</div>
+                            <div class="digit-circle">0</div>
+                            <div class="digit-circle">0</div>
+                            <div class="digit-circle">0</div>
+                            <div class="digit-circle">0</div>
+                            <div class="digit-circle">0</div>
+                            <div class="digit-circle">0</div>
+                            <div class="digit-circle">0</div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="panel">
+
+                        <div class="panel-header">
+                            <div>
+                                <h3>Digit Statistics</h3>
+                                <p>Analysis snapshot.</p>
+                            </div>
+                        </div>
+
+                        <div class="digit-stats">
+
+                            <div>
+                                <span>Most Frequent</span>
+                                <strong id="mostFrequent">-</strong>
+                            </div>
+
+                            <div>
+                                <span>Least Frequent</span>
+                                <strong id="leastFrequent">-</strong>
+                            </div>
+
+                            <div>
+                                <span>Even</span>
+                                <strong id="evenCount">0</strong>
+                            </div>
+
+                            <div>
+                                <span>Odd</span>
+                                <strong id="oddCount">0</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RISE FALL -->
+            <div id="risefall" class="analysis-panel">
+
+                <div class="direction-grid">
+
+                    <div class="direction-card rise">
+
+                        <div class="direction-icon">↗</div>
+
+                        <h2>RISE</h2>
+
+                        <p>Market movement analysis</p>
+
+                        <strong id="riseProbability">--%</strong>
+
+                    </div>
+
+
+                    <div class="direction-card fall">
+
+                        <div class="direction-icon">↘</div>
+
+                        <h2>FALL</h2>
+
+                        <p>Market movement analysis</p>
+
+                        <strong id="fallProbability">--%</strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel analysis-note">
+
+                    <h3>Analysis Notice</h3>
+
+                    <p>
+                        Probabilities displayed by this interface are analytical
+                        indicators only. They are not guaranteed trading signals.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHART -->
+            <div id="chart" class="analysis-panel">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Market Chart</h3>
+                            <p>Price movement visualization.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="chart-area">
+
+                        <div class="chart-line"></div>
+
+                        <div class="chart-labels">
+                            <span>1m</span>
+                            <span>5m</span>
+                            <span>15m</span>
+                            <span>1h</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= BOTS ================= -->
+        <section id="bots" class="section">
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Bot Trading</h1>
+                    <p>Manage your automated trading strategies.</p>
+                </div>
+
+                <button class="primary-btn" onclick="createBot()">
+                    + Create Bot
+                </button>
+
+            </div>
+
+
+            <div class="bot-grid">
+
+                <div class="bot-card">
+
+                    <div class="bot-top">
+
+                        <div class="bot-icon">🤖</div>
+
+                        <span class="status-badge inactive">
+                            Inactive
+                        </span>
+
+                    </div>
+
+                    <h3>Digits Bot</h3>
+
+                    <p>
+                        Automated digits strategy configuration.
+                    </p>
+
+                    <div class="bot-info">
+
+                        <span>Risk</span>
+                        <strong>Configurable</strong>
+
+                    </div>
+
+                    <button class="bot-btn" onclick="toggleBot(this)">
+                        Start Bot
+                    </button>
+
+                </div>
+
+
+                <div class="bot-card">
+
+                    <div class="bot-top">
+
+                        <div class="bot-icon">📈</div>
+
+                        <span class="status-badge inactive">
+                            Inactive
+                        </span>
+
+                    </div>
+
+                    <h3>Rise/Fall Bot</h3>
+
+                    <p>
+                        Automated rise and fall strategy.
+                    </p>
+
+                    <div class="bot-info">
+
+                        <span>Risk</span>
+                        <strong>Configurable</strong>
+
+                    </div>
+
+                    <button class="bot-btn" onclick="toggleBot(this)">
+                        Start Bot
+                    </button>
+
+                </div>
+
+
+                <div class="bot-card">
+
+                    <div class="bot-top">
+
+                        <div class="bot-icon">⚡</div>
+
+                        <span class="status-badge inactive">
+                            Inactive
+                        </span>
+
+                    </div>
+
+                    <h3>Custom Strategy</h3>
+
+                    <p>
+                        Build your own automated strategy.
+                    </p>
+
+                    <div class="bot-info">
+
+                        <span>Risk</span>
+                        <strong>Configurable</strong>
+
+                    </div>
+
+                    <button class="bot-btn" onclick="toggleBot(this)">
+                        Start Bot
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= COPY TRADING ================= -->
+        <section id="copy" class="section">
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Copy Trading</h1>
+                    <p>Manage strategies you choose to follow.</p>
+                </div>
+
+            </div>
+
+
+            <div class="copy-grid">
+
+                <div class="panel">
+
+                    <div class="copy-profile">
+
+                        <div class="big-avatar">T</div>
+
+                        <div>
+                            <h3>Top Strategy</h3>
+                            <span>Demo strategy</span>
+                        </div>
+
+                    </div>
+
+                    <div class="copy-stats">
+
+                        <div>
+                            <span>Performance</span>
+                            <strong>--</strong>
+                        </div>
+
+                        <div>
+                            <span>Followers</span>
+                            <strong>--</strong>
+                        </div>
+
+                    </div>
+
+                    <button class="primary-btn full" onclick="copyStrategy()">
+                        Follow Strategy
+                    </button>
+
+                </div>
+
+
+                <div class="panel empty-large">
+
+                    <div class="large-icon">👥</div>
+
+                    <h3>No copied strategies</h3>
+
+                    <p>
+                        Strategies you follow will appear here.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= HISTORY ================= -->
+        <section id="history" class="section">
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Trading History</h1>
+                    <p>Review your trading activity.</p>
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="history-table">
+
+                    <div class="history-head">
+                        <span>Type</span>
+                        <span>Market</span>
+                        <span>Result</span>
+                        <span>Amount</span>
+                        <span>Status</span>
+                    </div>
+
+                    <div id="historyBody">
+
+                        <div class="empty-state">
+                            No trades recorded.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= SETTINGS ================= -->
+        <section id="settings" class="section">
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Settings</h1>
+                    <p>Manage your dashboard preferences.</p>
+                </div>
+
+            </div>
+
+
+            <div class="settings-grid">
+
+                <div class="panel">
+
+                    <h3>Account</h3>
+
+                    <div class="setting-row">
+                        <span>Username</span>
+                        <strong id="settingsUsername">User</strong>
+                    </div>
+
+                    <div class="setting-row">
+                        <span>Email</span>
+                        <strong id="settingsEmail">Not available</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <h3>Preferences</h3>
+
+                    <div class="setting-row">
+                        <span>Notifications</span>
+
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span></span>
+                        </label>
+
+                    </div>
+
+                    <div class="setting-row">
+                        <span>Dark Mode</span>
+
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span></span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+</main>
+
+
+<script src="js/dashboard.js"></script>
+
+</body>
+</html>
