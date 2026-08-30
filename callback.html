@@ -4,164 +4,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>DOLLARSITE - Authorization</title>
 </head>
 
 <body>
 
-    <h2>Authorizing DOLLARSITE...</h2>
+<h2>Authorizing DOLLARSITE...</h2>
 
-    <p id="status">
-        Checking authorization...
-    </p>
+<p id="status">Checking authorization...</p>
 
+<script>
 
-    <script>
-
-        const status =
-            document.getElementById("status");
+const status =
+    document.getElementById("status");
 
 
-        // ==========================================
-        // GET DERIV CALLBACK PARAMETERS
-        // ==========================================
+// ==========================================
+// GET DERIV PARAMETERS
+// ==========================================
 
-        const params =
-            new URLSearchParams(
-                window.location.search
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const code =
+    params.get("code");
+
+const returnedState =
+    params.get("state");
+
+const error =
+    params.get("error");
+
+
+// ==========================================
+// GET PKCE DATA
+// ==========================================
+
+const savedState =
+    sessionStorage.getItem(
+        "oauth_state"
+    );
+
+const codeVerifier =
+    sessionStorage.getItem(
+        "pkce_code_verifier"
+    );
+
+
+// ==========================================
+// SUPABASE EDGE FUNCTION
+// ==========================================
+
+const EDGE_FUNCTION_URL =
+    "https://pzrqrdqhnjpjzpwxjysf.supabase.co/functions/v1/deriv-oauth";
+
+
+// ==========================================
+// ERROR CHECK
+// ==========================================
+
+if (error) {
+
+    status.textContent =
+        "Deriv authorization failed: " +
+        error;
+
+}
+
+
+// ==========================================
+// CODE CHECK
+// ==========================================
+
+else if (!code) {
+
+    status.textContent =
+        "No authorization code received.";
+
+}
+
+
+// ==========================================
+// STATE CHECK
+// ==========================================
+
+else if (!savedState) {
+
+    status.textContent =
+        "No saved OAuth session found. Please start login again.";
+
+}
+
+
+else if (
+    returnedState !== savedState
+) {
+
+    status.textContent =
+        "Security verification failed.";
+
+}
+
+
+// ==========================================
+// PKCE CHECK
+// ==========================================
+
+else if (!codeVerifier) {
+
+    status.textContent =
+        "PKCE verifier is missing.";
+
+}
+
+
+// ==========================================
+// TOKEN EXCHANGE
+// ==========================================
+
+else {
+
+    status.textContent =
+        "Authorization verified. Connecting to DOLLARSITE...";
+
+
+    fetch(
+        EDGE_FUNCTION_URL,
+        {
+
+            method: "POST",
+
+            headers: {
+
+                "Content-Type":
+                    "application/json"
+
+            },
+
+            body: JSON.stringify({
+
+                code:
+                    code,
+
+                code_verifier:
+                    codeVerifier
+
+            })
+
+        }
+    )
+
+    .then(async response => {
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Token exchange failed."
             );
 
-
-        const code =
-            params.get("code");
-
-        const returnedState =
-            params.get("state");
-
-        const error =
-            params.get("error");
+        }
 
 
-        // ==========================================
-        // GET SAVED PKCE INFORMATION
-        // ==========================================
+        return data;
 
-        const savedState =
-            sessionStorage.getItem(
-                "oauth_state"
-            );
-
-        const codeVerifier =
-            sessionStorage.getItem(
-                "pkce_code_verifier"
-            );
+    })
 
 
-        // ==========================================
-        // DEBUG
-        // ==========================================
+    .then(data => {
 
         console.log(
-            "Returned state:",
-            returnedState
-        );
-
-        console.log(
-            "Saved state:",
-            savedState
-        );
-
-        console.log(
-            "Code received:",
-            !!code
-        );
-
-        console.log(
-            "PKCE verifier exists:",
-            !!codeVerifier
+            "Deriv authorization successful."
         );
 
 
-        // ==========================================
-        // ERROR CHECK
-        // ==========================================
-
-        if (error) {
-
-            status.textContent =
-                "Deriv authorization failed: " +
-                error;
-
-        }
+        // Save Deriv token locally
+        localStorage.setItem(
+            "deriv_access_token",
+            data.access_token
+        );
 
 
-        // ==========================================
-        // CODE CHECK
-        // ==========================================
+        // Clear temporary PKCE data
+        sessionStorage.removeItem(
+            "pkce_code_verifier"
+        );
 
-        else if (!code) {
-
-            status.textContent =
-                "No authorization code received.";
-
-        }
+        sessionStorage.removeItem(
+            "oauth_state"
+        );
 
 
-        // ==========================================
-        // STATE CHECK
-        // ==========================================
-
-        else if (!savedState) {
-
-            status.textContent =
-                "No saved OAuth session found. Please start login again.";
-
-        }
+        status.textContent =
+            "Login successful! Redirecting...";
 
 
-        else if (
-            returnedState !== savedState
-        ) {
+        // Go to dashboard
+        setTimeout(() => {
 
-            status.textContent =
-                "Security verification failed.";
+            window.location.href =
+                "dashboard.html";
 
-        }
+        }, 1000);
 
-
-        // ==========================================
-        // PKCE CHECK
-        // ==========================================
-
-        else if (!codeVerifier) {
-
-            status.textContent =
-                "PKCE verifier is missing.";
-
-        }
+    })
 
 
-        // ==========================================
-        // AUTHORIZATION VERIFIED
-        // ==========================================
+    .catch(error => {
 
-        else {
+        console.error(
+            "OAuth error:",
+            error
+        );
 
-            status.textContent =
-                "Authorization verified successfully!";
 
-            console.log(
-                "Authorization code received."
-            );
+        status.textContent =
+            error.message ||
+            "Unable to complete authorization.";
 
-            console.log(
-                "Ready for secure token exchange."
-            );
+    });
 
-        }
+}
 
-    </script>
+</script>
 
 </body>
 
