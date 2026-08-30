@@ -1,4 +1,4 @@
-const DERIV_CLIENT_ID = "34g6Lzv4vWOGql5b20gly";
+const DERIV_CLIENT_ID = "348JWWfx0KHC8bTc1XuPf ";
 const REDIRECT_URI = "https://dollarsites.netlify.app/callback.html";
 
 async function startDerivLogin() {
