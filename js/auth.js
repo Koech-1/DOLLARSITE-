@@ -35,7 +35,7 @@ const DOLLARSITE_URL =
 // ==========================================
 
 const DERIV_CLIENT_ID =
-    ""34g6Lzv4vWOGql5b20gly ";
+    "34g6Lzv4vWOGql5b20gly";
 
 const REDIRECT_URI =
     "https://dollarsites.netlify.app/callback.html";
@@ -75,7 +75,6 @@ if (registerForm) {
 
             event.preventDefault();
 
-
             const fullName =
                 document.getElementById("fullName")
                     .value
@@ -99,10 +98,6 @@ if (registerForm) {
                 document.getElementById("confirmPassword")
                     .value;
 
-
-            // ------------------------------
-            // Validate passwords
-            // ------------------------------
 
             if (password !== confirmPassword) {
 
@@ -136,10 +131,6 @@ if (registerForm) {
 
             try {
 
-                // ------------------------------
-                // Create Supabase account
-                // ------------------------------
-
                 const {
                     data,
                     error
@@ -151,10 +142,6 @@ if (registerForm) {
                     password: password,
 
                     options: {
-
-                        // IMPORTANT:
-                        // Where Supabase sends the
-                        // user after email confirmation.
 
                         emailRedirectTo:
                             DOLLARSITE_URL +
@@ -180,10 +167,6 @@ if (registerForm) {
                 }
 
 
-                // ------------------------------
-                // Email confirmation required
-                // ------------------------------
-
                 if (!data.session) {
 
                     showMessage(
@@ -199,10 +182,6 @@ if (registerForm) {
                     return;
                 }
 
-
-                // ------------------------------
-                // Session already created
-                // ------------------------------
 
                 await createLocalUser(
                     data.user
@@ -277,10 +256,6 @@ if (loginForm) {
 
             try {
 
-                // ------------------------------
-                // Supabase login
-                // ------------------------------
-
                 const {
                     data,
                     error
@@ -311,18 +286,10 @@ if (loginForm) {
                 }
 
 
-                // ------------------------------
-                // Load profile
-                // ------------------------------
-
                 await createLocalUser(
                     data.user
                 );
 
-
-                // ------------------------------
-                // Open dashboard
-                // ------------------------------
 
                 window.location.href =
                     "dashboard.html";
@@ -393,10 +360,6 @@ async function createLocalUser(authUser) {
     }
 
 
-    // ------------------------------
-    // Build local user object
-    // ------------------------------
-
     const localUser = {
 
         id:
@@ -439,10 +402,17 @@ async function startDerivLogin() {
 
     try {
 
-        // ------------------------------
-        // Generate code verifier
-        // ------------------------------
+        // Clear any previous OAuth data
+        sessionStorage.removeItem(
+            "pkce_code_verifier"
+        );
 
+        sessionStorage.removeItem(
+            "oauth_state"
+        );
+
+
+        // Generate PKCE verifier
         const array =
             crypto.getRandomValues(
                 new Uint8Array(64)
@@ -465,10 +435,7 @@ async function startDerivLogin() {
                 .join("");
 
 
-        // ------------------------------
-        // Generate code challenge
-        // ------------------------------
-
+        // Generate SHA-256 challenge
         const hash =
             await crypto.subtle.digest(
                 "SHA-256",
@@ -489,10 +456,7 @@ async function startDerivLogin() {
                 .replace(/=+$/, "");
 
 
-        // ------------------------------
         // Generate state
-        // ------------------------------
-
         const stateArray =
             crypto.getRandomValues(
                 new Uint8Array(16)
@@ -509,9 +473,9 @@ async function startDerivLogin() {
                 .join("");
 
 
-        // ------------------------------
-        // Save OAuth information
-        // ------------------------------
+        // ======================================
+        // SAVE PKCE DATA
+        // ======================================
 
         sessionStorage.setItem(
             "pkce_code_verifier",
@@ -524,9 +488,44 @@ async function startDerivLogin() {
         );
 
 
-        // ------------------------------
-        // Build Deriv URL
-        // ------------------------------
+        // ======================================
+        // VERIFY STORAGE BEFORE REDIRECT
+        // ======================================
+
+        console.log(
+            "OAuth state saved:",
+            sessionStorage.getItem(
+                "oauth_state"
+            )
+        );
+
+        console.log(
+            "PKCE verifier saved:",
+            !!sessionStorage.getItem(
+                "pkce_code_verifier"
+            )
+        );
+
+
+        if (
+            !sessionStorage.getItem(
+                "oauth_state"
+            ) ||
+            !sessionStorage.getItem(
+                "pkce_code_verifier"
+            )
+        ) {
+
+            throw new Error(
+                "Unable to save OAuth session."
+            );
+
+        }
+
+
+        // ======================================
+        // BUILD DERIV AUTHORIZATION URL
+        // ======================================
 
         const params =
             new URLSearchParams({
@@ -555,13 +554,23 @@ async function startDerivLogin() {
             });
 
 
-        // ------------------------------
-        // Redirect to Deriv
-        // ------------------------------
-
-        window.location.href =
+        const authorizationUrl =
             "https://auth.deriv.com/oauth2/auth?" +
             params.toString();
+
+
+        console.log(
+            "Redirecting to Deriv OAuth..."
+        );
+
+
+        // ======================================
+        // REDIRECT
+        // ======================================
+
+        window.location.assign(
+            authorizationUrl
+        );
 
     }
 
@@ -573,6 +582,7 @@ async function startDerivLogin() {
         );
 
         showMessage(
+            error.message ||
             "Unable to start Deriv login."
         );
 
@@ -626,6 +636,10 @@ async function logout() {
         "loggedInUser"
     );
 
+    localStorage.removeItem(
+        "deriv_access_token"
+    );
+
 
     sessionStorage.removeItem(
         "pkce_code_verifier"
@@ -638,4 +652,4 @@ async function logout() {
 
     window.location.href =
         "login.html";
-        }
+}
